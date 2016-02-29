@@ -45,16 +45,13 @@ public static Specification<Product> applyTagFilterByFieldName(final NgTablePage
       
 			HashMap<String, String[]> filters = pageable.getFilters();
       
-            //Find filter parameter
-			for (String parameter : filters.keySet()){
-				if (fieldName.equals(parameter)){
-					String[] selectedIds = filters.get(parameter);
-					for (String selectedId : selectedIds){
-						Path<Object> path = root.join(fieldName).get("id");
-						predicate.getExpressions().add(builder
-								.and(builder.
-										equal(path, selectedId)));
-					}
+            if (filters.containsKey(fieldName)){
+				String[] selectedIds = filters.get(fieldName);
+				for (String selectedId : selectedIds){
+					Path<Object> path = root.join(fieldName).get("id");
+					predicate.getExpressions().add(builder
+						.and(builder.
+							equal(path, selectedId)));
 				}
 			}
 
@@ -83,14 +80,11 @@ public static Specification<Product> applyTextSearchFilterByFieldName(final NgTa
       
 			HashMap<String, String[]> filters = pageable.getFilters();
       
-            //Find filter parameter
-			for (String parameter : filters.keySet()){
-				if (fieldName.equals(parameter)){
-					String matchTerm = "%" + filters.get(parameter) + "%";
-						predicate.getExpressions().add(builder
-								.and(builder.
-										like(builder.lower(root.get(parameter).as(String.class)), matchTerm)));
-				}
+            if (filters.containsKey(fieldName)){
+				String matchTerm = "%" + filters.get(fieldName) + "%";
+				predicate.getExpressions().add(builder
+					.and(builder.
+						like(builder.lower(root.get(fieldName).as(String.class)), matchTerm)));
 			}
 
 			return predicate;
